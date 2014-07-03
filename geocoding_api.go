@@ -81,7 +81,7 @@ type QueryByAddressResponseFeature struct {
 	Text        string                 `json:"text,omitempty"`
 	Relevance   float64                `json:"relevance,omitempty"`
 	PlaceName   string                 `json:"place_name,omitempty"`
-	Properties  map[string]interface{} `json:properties,omitempty"`
+	Properties  map[string]interface{} `json:"properties,omitempty"`
 	ID          string                 `json:"id,omitempty"`
 	Geometry    *json.RawMessage       `json:"geometry,omitempty"`
 	Context     *json.RawMessage       `json:"context,omitempty"`
