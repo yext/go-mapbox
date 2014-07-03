@@ -6,5 +6,5 @@ This is a very first draft of a Google Go client for
 # License
 
 This code comes with a [MIT
-license](http://github.com/olivere/mapbox/LICENSE).
+license](https://github.com/olivere/mapbox/blob/master/LICENSE).
 
