@@ -74,6 +74,7 @@ func (c *Client) getResponse(url string) (*http.Response, error) {
 		return nil, err
 	}
 	res, err := c.httpClient.Do(req)
+	req.Header.Set("User-Agent", UserAgent)
 	if err != nil {
 		return nil, err
 	}
