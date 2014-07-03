@@ -85,7 +85,7 @@ func (c *Client) getJSON(url string, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Add("User-Agent", UserAgent)
+	req.Header.Set("User-Agent", UserAgent)
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return err
