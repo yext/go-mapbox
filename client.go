@@ -7,9 +7,8 @@ import (
 )
 
 const (
-	MapboxHost       = "api.tiles.mapbox.com"
-	MapboxPathPrefix = "/v4"
-	UserAgent        = "Mapbox Google Go Client v0.1"
+	MapboxHost = "api.tiles.mapbox.com"
+	UserAgent  = "Mapbox Google Go Client v0.1"
 )
 
 type Client struct {
@@ -53,7 +52,7 @@ func (c *Client) BaseURL() string {
 		url.Scheme = "http"
 	}
 	url.Host = MapboxHost
-	url.Path = MapboxPathPrefix
+	url.Path = ""
 	return url.String()
 }
 

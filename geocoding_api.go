@@ -33,7 +33,7 @@ func (api *GeocodingAPI) QueryByAddress(address *QueryByAddressRequest) (*QueryB
 // buildURL returns the complete URL for the forward geocoding request,
 // including the access token specified in the Client.
 func (api *GeocodingAPI) buildURL(req *QueryByAddressRequest) (string, error) {
-	u, err := url.Parse(fmt.Sprintf("%s/geocode/%s/%s.json",
+	u, err := url.Parse(fmt.Sprintf("%s/geocoding/v5/%s/%s.json",
 		api.c.BaseURL(),
 		url.QueryEscape(req.Index),
 		url.QueryEscape(req.Query)))
@@ -44,8 +44,18 @@ func (api *GeocodingAPI) buildURL(req *QueryByAddressRequest) (string, error) {
 	// Add access_token as query string parameter
 	q := u.Query()
 	q.Set("access_token", api.c.accessToken)
+
+	if req.Proximity != nil {
+		q.Set("proximity", fmt.Sprintf("%f,%f", req.Proximity.Latitude, req.Proximity.Longitude))
+	}
+
 	u.RawQuery = q.Encode()
 	return u.String(), nil
+}
+
+type Coordinate struct {
+	Latitude  float64
+	Longitude float64
 }
 
 type QueryByAddressRequest struct {
@@ -53,18 +63,19 @@ type QueryByAddressRequest struct {
 	// https://www.mapbox.com/developers/api/geocoding/.
 	// If you construct a QueryByAddressRequest via
 	// NewQueryByAddressRequest, the the Index is set to
-	// "mapbox.places-v1" by default.
+	// "mapbox.places" by default.
 	Index string
-
 	// Query is the address you want to decode.
 	Query string
+	// Proximity is a set of coordinates
+	Proximity *Coordinate
 }
 
 // NewQueryByAddressRequest creates a new QueryByAddressRequest.
 // It initializes the geocoding index with "mapbox.places-v1".
 func NewQueryByAddressRequest() *QueryByAddressRequest {
 	return &QueryByAddressRequest{
-		Index: "mapbox.places-v1",
+		Index: "mapbox.places",
 	}
 }
 

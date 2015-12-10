@@ -40,7 +40,7 @@ func (api *ImagesAPI) Get(req *ImageRequest) (image.Image, error) {
 // buildURL returns the complete URL for the request,
 // including the access token specified in the Client.
 func (api *ImagesAPI) buildURL(req *ImageRequest) (string, error) {
-	urls := fmt.Sprintf("%s/%s", api.c.BaseURL(), url.QueryEscape(api.mapId))
+	urls := fmt.Sprintf("%s/v4/%s", api.c.BaseURL(), url.QueryEscape(api.mapId))
 	if len(req.Markers) > 0 {
 		s := ""
 		for i, marker := range req.Markers {

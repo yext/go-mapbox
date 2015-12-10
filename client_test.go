@@ -20,10 +20,6 @@ func TestMapboxDefaults(t *testing.T) {
 	if MapboxHost != expected {
 		t.Errorf("expected mapbox host of %q, got: %q", expected, MapboxHost)
 	}
-	expected = "/v4"
-	if MapboxPathPrefix != expected {
-		t.Errorf("expected mapbox path prefix of %q, got: %q", expected, MapboxPathPrefix)
-	}
 }
 
 func TestHTTPClient(t *testing.T) {
@@ -39,7 +35,7 @@ func TestBaseURL(t *testing.T) {
 	if c.HTTPS() {
 		t.Error("expected HTTP scheme by default, got: HTTPS")
 	}
-	expected := "http://api.tiles.mapbox.com/v4"
+	expected := "http://api.tiles.mapbox.com"
 	got := c.BaseURL()
 	if got != expected {
 		t.Errorf("expeced base URL of %q, got: %q", expected, got)
@@ -50,7 +46,7 @@ func TestBaseURL(t *testing.T) {
 	if !c.HTTPS() {
 		t.Error("expected HTTPS scheme, got: HTTP")
 	}
-	expected = "https://api.tiles.mapbox.com/v4"
+	expected = "https://api.tiles.mapbox.com"
 	got = c.BaseURL()
 	if got != expected {
 		t.Errorf("expeced base URL of %q, got: %q", expected, got)

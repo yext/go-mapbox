@@ -17,21 +17,21 @@ func TestQueryByAddressURLs(t *testing.T) {
 				Index: "mapbox.places-postcode-v1",
 				Query: "20001",
 			},
-			URL: "http://api.tiles.mapbox.com/v4/geocode/mapbox.places-postcode-v1/20001.json?access_token=" + accessToken,
+			URL: "http://api.tiles.mapbox.com/geocoding/v5/mapbox.places-postcode-v1/20001.json?access_token=" + accessToken,
 		},
 		{
 			Request: &QueryByAddressRequest{
 				Index: "mapbox.places-province-v1",
 				Query: "pennsylvania",
 			},
-			URL: "http://api.tiles.mapbox.com/v4/geocode/mapbox.places-province-v1/pennsylvania.json?access_token=" + accessToken,
+			URL: "http://api.tiles.mapbox.com/geocoding/v5/mapbox.places-province-v1/pennsylvania.json?access_token=" + accessToken,
 		},
 		{
 			Request: &QueryByAddressRequest{
 				Index: "mapbox.places-v1",
 				Query: "1600 pennsylvania ave nw",
 			},
-			URL: "http://api.tiles.mapbox.com/v4/geocode/mapbox.places-v1/1600+pennsylvania+ave+nw.json?access_token=" + accessToken,
+			URL: "http://api.tiles.mapbox.com/geocoding/v5/mapbox.places-v1/1600+pennsylvania+ave+nw.json?access_token=" + accessToken,
 		},
 	}
 
@@ -138,5 +138,58 @@ func TestQueryByCity(t *testing.T) {
 	}
 	if len(f.BoundingBox) != 4 {
 		t.Errorf("expected bbox with 4 coordinates, got: %v", len(f.BoundingBox))
+	}
+}
+
+func TestQueryWithProximity(t *testing.T) {
+	accessToken, err := readAccessToken(t)
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	geocoder := NewClient(accessToken).Geocoding()
+	reqBiased := &QueryByAddressRequest{
+		Index: "mapbox.places",
+		Query: "200 queen street",
+		Proximity: &Coordinate{
+			Latitude:  -66.1,
+			Longitude: 45.3,
+		},
+	}
+
+	reqUnbiased := &QueryByAddressRequest{
+		Index: "mapbox.places",
+		Query: "200 queen street",
+	}
+
+	resBiased, err := geocoder.QueryByAddress(reqBiased)
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+	if resBiased == nil {
+		t.Fatalf("expected result, got: %v", resBiased)
+	}
+
+	resUnbiased, err := geocoder.QueryByAddress(reqUnbiased)
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+	if resUnbiased == nil {
+		t.Fatalf("expected result, got: %v", resUnbiased)
+	}
+
+	if len(resBiased.Features) < 1 {
+		t.Fatalf("expected at least 1 feature for England, got: %v", len(resBiased.Features))
+	}
+	if len(resUnbiased.Features) < 1 {
+		t.Fatalf("expected at least 1 feature for Canada, got: %v", len(resUnbiased.Features))
+	}
+
+	fBiased := resBiased.Features[0]
+	fUnbiased := resUnbiased.Features[0]
+
+	if fBiased.ID == fUnbiased.ID {
+		t.Errorf("Didn't expect match between features, got %q", fBiased.ID)
 	}
 }
