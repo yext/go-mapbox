@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/url"
+	"strconv"
 )
 
 var _ = log.Print
@@ -46,16 +47,30 @@ func (api *GeocodingAPI) buildURL(req *QueryByAddressRequest) (string, error) {
 	q.Set("access_token", api.c.accessToken)
 
 	if req.Proximity != nil {
-		q.Set("proximity", fmt.Sprintf("%f,%f", req.Proximity.Latitude, req.Proximity.Longitude))
+		// Add proximity parameter, limit to 3dp as recommended by Mapbox
+		q.Set("proximity", fmt.Sprintf("%.3f,%.3f", req.Proximity.Longitude, req.Proximity.Latitude))
 	}
 
 	u.RawQuery = q.Encode()
+
 	return u.String(), nil
 }
 
 type Coordinate struct {
 	Latitude  float64
 	Longitude float64
+}
+
+func NewCoordinate(latitude, longitude string) (*Coordinate, error) {
+	latitudeF, err := strconv.ParseFloat(latitude, 64)
+	if err != nil {
+		return nil, err
+	}
+	longitudeF, err := strconv.ParseFloat(longitude, 64)
+	if err != nil {
+		return nil, err
+	}
+	return &Coordinate{latitudeF, longitudeF}, nil
 }
 
 type QueryByAddressRequest struct {

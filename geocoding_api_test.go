@@ -151,16 +151,16 @@ func TestQueryWithProximity(t *testing.T) {
 	geocoder := NewClient(accessToken).Geocoding()
 	reqBiased := &QueryByAddressRequest{
 		Index: "mapbox.places",
-		Query: "200 queen street",
+		Query: "broadway",
 		Proximity: &Coordinate{
-			Latitude:  -66.1,
-			Longitude: 45.3,
+			Latitude:  37.335,
+			Longitude: -122.032,
 		},
 	}
 
 	reqUnbiased := &QueryByAddressRequest{
 		Index: "mapbox.places",
-		Query: "200 queen street",
+		Query: "broadway",
 	}
 
 	resBiased, err := geocoder.QueryByAddress(reqBiased)
