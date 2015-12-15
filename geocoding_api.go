@@ -61,7 +61,7 @@ type Coordinate struct {
 	Longitude float64
 }
 
-func NewCoordinate(latitude, longitude string) (*Coordinate, error) {
+func ParseCoordinate(latitude, longitude string) (*Coordinate, error) {
 	latitudeF, err := strconv.ParseFloat(latitude, 64)
 	if err != nil {
 		return nil, err
