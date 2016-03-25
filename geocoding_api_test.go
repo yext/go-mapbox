@@ -193,3 +193,57 @@ func TestQueryWithProximity(t *testing.T) {
 		t.Errorf("Didn't expect match between features, got %q", fBiased.ID)
 	}
 }
+
+func TestQueryWithType(t *testing.T) {
+	accessToken, err := readAccessToken(t)
+	if err != nil {
+		t.Fail()
+		return
+	}
+
+	queryStr := "india"
+
+	geocoder := NewClient(accessToken).Geocoding()
+	requestFiltered := &QueryByAddressRequest{
+		Index: "mapbox.places",
+		Query: queryStr,
+		Types: []string{"postcode", "place", "locality", "neighborhood", "address", "poi"},
+	}
+
+	requestUnfiltered := &QueryByAddressRequest{
+		Index: "mapbox.places",
+		Query: queryStr,
+	}
+
+	resFiltered, err := geocoder.QueryByAddress(requestFiltered)
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+	if resFiltered == nil {
+		t.Fatalf("expected result, got: %v", resFiltered)
+	}
+
+	resUnfiltered, err := geocoder.QueryByAddress(requestUnfiltered)
+	if err != nil {
+		t.Fatalf("expected no error, got: %v", err)
+	}
+	if resUnfiltered == nil {
+		t.Fatalf("expected result, got: %v", resUnfiltered)
+	}
+
+	for _, feat := range resFiltered.Features {
+		if strings.EqualFold(feat.PlaceName, queryStr) {
+			t.Fatalf("expected no region results when filtering, got %s for %s", feat.PlaceName, queryStr)
+		}
+	}
+
+	foundRegionType := false
+	for _, feat := range resUnfiltered.Features {
+		if strings.EqualFold(feat.PlaceName, queryStr) {
+			foundRegionType = true
+		}
+	}
+	if !foundRegionType {
+		t.Fatalf("expected at least 1 region result when not filtering, got none for %s", queryStr)
+	}
+}
