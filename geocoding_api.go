@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 var _ = log.Print
@@ -51,8 +52,11 @@ func (api *GeocodingAPI) buildURL(req *QueryByAddressRequest) (string, error) {
 		q.Set("proximity", fmt.Sprintf("%.3f,%.3f", req.Proximity.Longitude, req.Proximity.Latitude))
 	}
 
-	u.RawQuery = q.Encode()
+	if len(req.Types) > 0 {
+		q.Set("types", strings.Join(req.Types, ","))
+	}
 
+	u.RawQuery = q.Encode()
 	return u.String(), nil
 }
 
@@ -84,6 +88,8 @@ type QueryByAddressRequest struct {
 	Query string
 	// Proximity is a set of coordinates
 	Proximity *Coordinate
+	// Types are filters on the granularity of results to return, e.g. region, locality, poi
+	Types []string
 }
 
 // NewQueryByAddressRequest creates a new QueryByAddressRequest.
